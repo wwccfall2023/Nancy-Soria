@@ -79,9 +79,8 @@ INNER JOIN (
   SELECT character_id, item_id FROM inventory
   UNION
   SELECT character_id, item_id FROM equipped)
-  AS ce ON c.character_id, = ce.character_id
+  AS ce ON c.character_id = ce.character_id
 INNER JOIN items i ON ce.item_id = i.item_id;
-
 
 CREATE VIEW team_items AS
 SELECT 
@@ -96,12 +95,11 @@ INNER JOIN (
   SELECT character_id, item_id FROM inventory
   UNION 
   SELECT character_id, item_id FROM equipped)
-  AS te ON c.character_id = te.character_id
-  INNER JOIN items i ON te.item_id = i.item_id;
+  AS te ON tm.character_id = te.character_id
+INNER JOIN items i ON te.item_id = i.item_id;
 
-SELECT * FROM team_inventory
-UNION
-SELECT * FROM team_equipped;
+
+
 
 
 
