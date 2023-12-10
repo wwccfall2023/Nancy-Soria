@@ -121,6 +121,95 @@ END ;;
 
 DELIMITER ;
 
+DELIMITER ;;
+
+CREATE PROCEDURE attack(
+  p_id_of_character_being_attacked INT UNSIGNED,
+  p_id_of_equipped_item_used_for_attack INT UNSIGNED
+)
+BEGIN
+  DECLARE character_armor INT;
+  DECLARE item_damage INT;
+  DECLARE damage_dealt INT;
+
+  SET character_armor = armor_total(p_id_of_character_being_attacked);
+
+  SELECT damage INTO item_damage
+  FROM equipped
+  JOIN items ON equipped.item_id = items.item_id
+  WHERE equipped.equipped_id = p_id_of_equipped_item_used_for_attack;
+
+  SET damage_dealt = GREATEST(item_damage - character_armor, 0);
+
+  UPDATE character_stats
+  SET health = GREATEST(health - damage_dealt, 0)
+  WHERE character_id = p_id_of_character_being_attacked;
+
+  IF health <= 0 THEN
+    DELETE FROM characters WHERE character_id = p_id_of_character_being_attacked;
+    DELETE FROM team_members WHERE character_id = p_id_of_character_being_attacked;
+    DELETE FROM winners WHERE character_id = p_id_of_character_being_attacked;
+  END IF;
+END ;;
+
+DELIMITER ;
+
+DELIMITER ;;
+
+CREATE PROCEDURE equip(p_inventory_id INT UNSIGNED)
+BEGIN
+  DECLARE item_id INT;
+
+  SELECT item_id INTO item_id
+  FROM inventory
+  WHERE inventory_id = p_inventory_id;
+
+  INSERT INTO equipped (character_id, item_id)
+  SELECT character_id, item_id
+  FROM inventory
+  WHERE inventory_id = p_inventory_id;
+
+  DELETE FROM inventory WHERE inventory_id = p_inventory_id;
+END ;;
+
+DELIMITER ;
+
+DELIMITER ;;
+
+CREATE PROCEDURE unequip(p_equipped_id INT UNSIGNED)
+BEGIN
+  DECLARE item_id INT;
+
+  SELECT item_id INTO item_id
+  FROM equipped
+  WHERE equipped_id = p_equipped_id;
+
+  INSERT INTO inventory (character_id, item_id)
+  SELECT character_id, item_id
+  FROM equipped
+  WHERE equipped_id = p_equipped_id;
+
+  DELETE FROM equipped WHERE equipped_id = p_equipped_id;
+END ;;
+
+DELIMITER ;
+
+DELIMITER ;;
+
+CREATE PROCEDURE set_winners(p_team_id INT UNSIGNED)
+BEGIN
+  DELETE FROM winners;
+  INSERT INTO winners (character_id, name)
+  SELECT c.character_id, c.name
+  FROM team_members tm
+  JOIN characters c ON tm.character_id = c.character_id
+  WHERE tm.team_id = p_team_id;
+END ;;
+
+DELIMITER ;
+
+
+
 
 
 
