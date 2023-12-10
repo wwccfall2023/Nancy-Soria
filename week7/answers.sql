@@ -66,4 +66,45 @@ CREATE TABLE equipped (
   FOREIGN KEY (item_id) REFERENCES items(item_id)
 );
 
+-- Create Views
+CREATE VIEW character_items AS 
+SELECT 
+  c.character_id,
+  c.name AS character_name,
+  i.name AS item_name,
+  i.armor,
+  i.damage
+FROM characters c
+INNER JOIN (
+  SELECT character_id, item_id FROM inventory
+  UNION
+  SELECT character_id, item_id FROM equipped)
+  AS ce ON c.character_id, = ce.character_id
+INNER JOIN items i ON ce.item_id = i.item_id;
+
+
+CREATE VIEW team_items AS
+SELECT 
+  t.team_id,
+  t.name AS team_name,
+  i.name AS item_name,
+  i.armor,
+  i.damage
+FROM teams t 
+INNER JOIN team_members tm ON t.team_id = tm.team_id
+INNER JOIN (
+  SELECT character_id, item_id FROM inventory
+  UNION 
+  SELECT character_id, item_id FROM equipped)
+  AS te ON c.character_id = te.character_id
+  INNER JOIN items i ON te.item_id = i.item_id;
+
+SELECT * FROM team_inventory
+UNION
+SELECT * FROM team_equipped;
+
+
+
+
+
 
