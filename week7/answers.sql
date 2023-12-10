@@ -102,6 +102,7 @@ INNER JOIN items i ON te.item_id = i.item_id;
 DELIMITER ;;
 
 CREATE FUNCTION armor_total(p_character_id INT UNSIGNED) RETURNS INT
+DETERMINISTIC
 BEGIN
   DECLARE total_armor INT;
 
