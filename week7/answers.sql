@@ -100,7 +100,6 @@ INNER JOIN (
 INNER JOIN items i ON te.item_id = i.item_id
 ORDER BY t.team_id, i.name;
 
-
 -- Create function
 DELIMITER ;;
 
@@ -191,26 +190,8 @@ BEGIN
   INSERT INTO inventory (character_id, item_id)
   SELECT character_id, item_id
   FROM equipped
-  WHERE equipped_id = p_equipped_id;
+ 
 
-  DELETE FROM equipped WHERE equipped_id = p_equipped_id;
-END ;;
-
-DELIMITER ;
-
-DELIMITER ;;
-
-CREATE PROCEDURE set_winners(p_team_id INT UNSIGNED)
-BEGIN
-  DELETE FROM winners;
-  INSERT INTO winners (character_id, name)
-  SELECT c.character_id, c.name
-  FROM team_members tm
-  JOIN characters c ON tm.character_id = c.character_id
-  WHERE tm.team_id = p_team_id;
-END ;;
-
-DELIMITER ;
 
 
 
