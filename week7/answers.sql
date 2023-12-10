@@ -190,6 +190,9 @@ BEGIN
   INSERT INTO inventory (character_id, item_id)
   SELECT character_id, item_id
   FROM equipped
+END ;;
+
+DELIMETER;
  
 
 
