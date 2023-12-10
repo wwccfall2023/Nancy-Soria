@@ -16,4 +16,71 @@ CREATE TABLE characters (
   level INT,
   FOREIGN KEY (player_id) REFERENCES players(player_id)
 );
-  
+
+CREATE TABLE winners (
+  character_id INT UNSIGNED PRIMARY KEY,
+  name VARCHAR(50) NOT NULL,
+  FOREIGN KEY (character_id) REFERENCES characters(character_id),
+);
+
+CREATE TABLE character_stats (
+  character_id INT UNSIGNED PRIMARY KEY,
+  health INT,
+  armor INT
+  FOREIGN KEY (character_id) REFERENCES characters(character_id),
+);
+
+CREATE TABLE teams (
+  team_id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE team_members (
+  team_member_id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  team_id INT UNSIGNED,
+  character_id INT UNSIGNED,
+  FOREIGN KEY (team_id) REFERENCES teams(team_id),
+  FOREIGN KEY (character_id) REFERENCES characters(character_id)
+);
+
+CREATE TABLE items (
+  item_id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  name VARCHAR(50) NOT NULL
+  armor INT,
+  damage INT
+);
+
+CREATE TABLE inventory (
+  inventory_id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  character_id INT UNSIGNED,
+  item_id INT UNSIGNED,
+  FOREIGN KEY (character_id) REFERENCES characters(character_id),
+  FOREIGN KEY (item_id) REFERENCES items(item_id) 
+);
+
+CREATE TABLE equipped (
+  equipped_id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  character_id INT UNSIGNED;
+  item_id INT UNSIGNED,
+  FOREIGN KEY (character_id) REFERENCES characters(character_id),
+  FOREIGN KEY (item_id) REFERENCES items(item_id)
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
