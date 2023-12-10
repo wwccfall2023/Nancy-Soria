@@ -2,10 +2,6 @@
 CREATE SCHEMA social;
 USE social;
 
--- Create your tables, views, functions and procedures here!
-CREATE SCHEMA social;
-USE social;
-
 -- Create Users Table
 CREATE TABLE users (
   user_id INT PRIMARY KEY,
