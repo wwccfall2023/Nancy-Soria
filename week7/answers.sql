@@ -177,6 +177,7 @@ END ;;
 
 DELIMITER ;
 
+
 DELIMITER ;;
 
 CREATE PROCEDURE unequip(p_equipped_id INT UNSIGNED)
@@ -190,9 +191,12 @@ BEGIN
   INSERT INTO inventory (character_id, item_id)
   SELECT character_id, item_id
   FROM equipped
+  WHERE equipped_id = p_equipped_id;
+
+  DELETE FROM equipped WHERE equipped_id = p_equipped_id;
 END ;;
 
-DELIMETER;
+DELIMITER ;
  
 
 
