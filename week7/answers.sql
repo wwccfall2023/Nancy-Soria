@@ -80,7 +80,8 @@ INNER JOIN (
   UNION
   SELECT character_id, item_id FROM equipped)
   AS ce ON c.character_id = ce.character_id
-INNER JOIN items i ON ce.item_id = i.item_id;
+INNER JOIN items i ON ce.item_id = i.item_id
+ORDER BY c.character_id, i.name;
 
 CREATE VIEW team_items AS
 SELECT 
@@ -96,7 +97,9 @@ INNER JOIN (
   UNION 
   SELECT character_id, item_id FROM equipped)
   AS te ON tm.character_id = te.character_id
-INNER JOIN items i ON te.item_id = i.item_id;
+INNER JOIN items i ON te.item_id = i.item_id
+ORDER BY t.team_id, i.name;
+
 
 -- Create function
 DELIMITER ;;
