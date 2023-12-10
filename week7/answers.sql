@@ -98,6 +98,29 @@ INNER JOIN (
   AS te ON tm.character_id = te.character_id
 INNER JOIN items i ON te.item_id = i.item_id;
 
+-- Create function
+DELIMITER ;;
+
+CREATE FUNCTION armor_total(p_character_id INT UNSIGNED) RETURNS INT
+BEGIN
+  DECLARE total_armor INT;
+
+  SELECT COALESCE(SUM(armor), 0)
+  INTO total_armor
+  FROM character_stats
+  WHERE character_id = p_character_id;
+
+  SELECT COALESCE(SUM(items.armor), 0)
+  INTO total_armor
+  FROM equipped
+  INNER JOIN items ON equipped.item_id = items.item_id
+  WHERE equipped.character_id = p_character_id;
+
+  RETURN total_armor;
+END ;;
+
+DELIMITER ;
+
 
 
 
