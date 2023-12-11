@@ -83,14 +83,17 @@ BEGIN
   INSERT INTO posts (user_id, content) 
   VALUES (@new_user_id, CONCAT(p_first_name, ' ', p_last_name, ' just joined!'));
 END;
-
+;;
 DELIMITER ;
 
+
+-- Remove old sessions 
 DELIMITER ;;
 CREATE PROCEDURE remove_old_sessions()
 BEGIN 
    DELETE FROM sessions WHERE updated_on < NOW() - INTERVAL 2 HOUR;
 END;
+;;
 DELIMITER ;
 
 -- Event to trigger procedure 
@@ -103,8 +106,10 @@ DO
 BEGIN
     CALL remove_old_sessions();
 END;
-
+;;
 DELIMITER ;;
+
+-- Add posts
 CREATE PROCEDURE add_post(
     IN p_user_id INT,
     IN p_content TEXT
@@ -118,4 +123,5 @@ BEGIN
     FROM friends f
     WHERE f.user_id = p_user_id;
 END;
+;;
 DELIMITER ;
