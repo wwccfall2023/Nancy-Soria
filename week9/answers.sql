@@ -44,11 +44,11 @@ CREATE TABLE notifications (
   notification_id INT PRIMARY KEY,
   user_id INT,
   post_id INT,
-  FOREIGN KEY user_id REFERENCES users(user_id)
+  FOREIGN KEY user_id REFERENCES users(user_id),
   FOREIGN KEY post_id REFERENCES posts(post_id)
 );
 
--- Craete View 
+-- Create View 
 CREATE VIEW notification_posts AS
 SELECT 
   n.user_id,
@@ -62,3 +62,17 @@ INNER JOIN users u ON n.user_id = u.user_id
 LEFT JOIN posts p ON n.post_id = p.post_id;
 
 -- Create Stored Program 
+-- Add a User 
+DELIMITER ;;
+CREATE PROCEDURE add_user (
+  IN p_first_name VARCHAR(50),
+  IN p_last_name VARCHAR(50),
+  IN p_email VARCHAR(100)
+)
+BEGIN
+  INSERT INTO users (first_name, last_name, email) VALUES (p_first_name, p_last_name, p_email);
+    INSERT INTO notifications (user_id, post_id) 
+    SELECT user_id, NULL FROM users WHERE user_id != LAST_INSERT_ID();
+END;
+
+DELIMITER ;
