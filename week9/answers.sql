@@ -107,7 +107,7 @@ BEGIN
     CALL remove_old_sessions();
 END;
 ;;
-DELIMITER ;;
+DELIMITER ;
 
 -- Add posts
 CREATE PROCEDURE add_post(
