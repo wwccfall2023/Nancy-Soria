@@ -44,8 +44,8 @@ CREATE TABLE notifications (
   notification_id INT PRIMARY KEY,
   user_id INT,
   post_id INT,
-  FOREIGN KEY user_id REFERENCES users(user_id),
-  FOREIGN KEY post_id REFERENCES posts(post_id)
+  FOREIGN KEY (user_id) REFERENCES users(user_id),
+  FOREIGN KEY (post_id) REFERENCES posts(post_id)
 );
 
 -- Create View 
@@ -71,8 +71,51 @@ CREATE PROCEDURE add_user (
 )
 BEGIN
   INSERT INTO users (first_name, last_name, email) VALUES (p_first_name, p_last_name, p_email);
-    INSERT INTO notifications (user_id, post_id) 
-    SELECT user_id, NULL FROM users WHERE user_id != LAST_INSERT_ID();
+  SET @new_user_id := LAST_INSERT_ID();
+    
+  INSERT INTO notifications (user_id, post_id) 
+  SELECT user_id, NULL 
+  FROM users
+  WHERE user_id != @new_user_id;
+  INSERT INTO notifications (user_id, post_id) 
+  VALUES (@new_user_id, NULL);
+    
+  INSERT INTO posts (user_id, content) 
+  VALUES (@new_user_id, CONCAT(p_first_name, ' ', p_last_name, ' just joined!'));
 END;
 
+DELIMITER ;
+
+DELIMITER ;;
+CREATE PROCEDURE remove_old_sessions()
+BEGIN 
+   DELETE FROM sessions WHERE updated_on < NOW() - INTERVAL 2 HOUR;
+END;
+DELIMITER ;
+
+-- Event to trigger procedure 
+SET GLOBAL event_scheduler = ON;
+
+-- Create an event to run the remove_old_sessions stored procedure every 10 seconds
+CREATE EVENT remove_old_sessions_event
+ON SCHEDULE EVERY 10 SECOND
+DO
+BEGIN
+    CALL remove_old_sessions();
+END;
+
+DELIMITER ;;
+CREATE PROCEDURE add_post(
+    IN p_user_id INT,
+    IN p_content TEXT
+)
+BEGIN
+    INSERT INTO posts (user_id, content) VALUES (p_user_id, p_content);
+    
+    -- Create notifications for all friends of the user
+    INSERT INTO notifications (user_id, post_id)
+    SELECT f.friend_id, LAST_INSERT_ID()
+    FROM friends f
+    WHERE f.user_id = p_user_id;
+END;
 DELIMITER ;
