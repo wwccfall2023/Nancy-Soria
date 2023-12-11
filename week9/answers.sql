@@ -70,6 +70,7 @@ CREATE PROCEDURE add_user (
   IN p_email VARCHAR(100)
 )
 BEGIN
+  START TRANSACTION;
   INSERT INTO users (first_name, last_name, email) VALUES (p_first_name, p_last_name, p_email);
   SET @new_user_id := LAST_INSERT_ID();
     
@@ -82,6 +83,7 @@ BEGIN
     
   INSERT INTO posts (user_id, content) 
   VALUES (@new_user_id, CONCAT(p_first_name, ' ', p_last_name, ' just joined!'));
+  COMMIT;
 END;
 ;;
 DELIMITER ;
